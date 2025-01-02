@@ -14,8 +14,9 @@
             "email": "puleeno@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
-        "adhocore/cli": "^v0.9.0"
+        "adhocore/cli": "^v0.9.0",
+        "mashape/unirest-php": "^3.0"
     }
 }
