@@ -3,12 +3,12 @@
 
 $rootDir = dirname(__DIR__);
 
-use Ahc\Cli\Application;
-use Puleeno\Toolkit\Interfaces\CommandInterface;
-use Ahc\Cli\Input\Command;
+use Cilex\Application;
 use Puleeno\Toolkit\Commands\DownloadCommand;
+use Puleeno\Toolkit\Interfaces\CommandInterface;
 
 define('PULEENO_TOOLKIT_ROOT_DIR', $rootDir);
+define( 'PULEENO_TOOLKIT_WORKING_DIR', getcwd());
 
 class Puleeno_Toolkit {
     protected Application $app;
@@ -46,32 +46,26 @@ class Puleeno_Toolkit {
             if (!$commandInstance instanceof CommandInterface) {
                 continue;
             }
+            $reflect = new ReflectionClass($command);
+            /**
+             * @var \Puleeno\Toolkit\Interfaces\CommandInterface
+             */
+            $commandInstance = $reflect->newInstanceArgs([$commandInstance->getCommandName()]);
+            $command = $this->app->command($commandInstance)
+                ->setDescription($commandInstance->getDescription());
 
-
-            $cli = $this->app->command($commandInstance->getCommandName(), $commandInstance->getDescription())
-                ->alias($commandInstance->getAlias())
-                ->action([$commandInstance, 'execute']);
-
-            // register options
-            $commandInstance->registerOptions($cli);
-            $commandInstance->setCommand($cli);
-
-
-            $cli->tap();
+            if ($commandInstance->getAlias()) {
+                $command->setAliases([$commandInstance->getAlias()]);
+            }
         }
     }
 
-    public function parse() {
-        $this->app->parse($_SERVER['argv']);
-    }
-
     public function run() {
-        $this->app->handle($_SERVER['argv']);
+        $this->app->run();
     }
 }
 
 $toolkit = new Puleeno_Toolkit();
 $toolkit->register();
 $toolkit->init();
-$toolkit->parse();
 $toolkit->run();

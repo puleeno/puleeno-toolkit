@@ -16,7 +16,10 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "adhocore/cli": "^v0.9.0",
-        "mashape/unirest-php": "^3.0"
+        "mashape/unirest-php": "^3.0",
+        "cilex/cilex": "^2.0"
+    },
+    "require-dev": {
+        "kherge/box": "~2.0"
     }
 }
