@@ -1,0 +1,76 @@
+#!/usr/bin/env php
+<?php
+
+$rootDir = dirname(__DIR__);
+
+use Ahc\Cli\Application;
+use Puleeno\Toolkit\Interfaces\CommandInterface;
+use Ahc\Cli\Input\Command;
+use Puleeno\Toolkit\Commands\DownloadCommand;
+
+define('PULEENO_TOOLKIT_ROOT_DIR', $rootDir);
+
+class Puleeno_Toolkit {
+    protected Application $app;
+
+    /**
+     * Summary of commands
+     * @var \Puleeno\Toolkit\Interfaces\CommandInterface[]
+     */
+    protected $commands = [];
+
+    public function __construct() {
+        $this->loadComposer();
+
+        $this->app = new Application('puleeno', '2024.01.02');
+    }
+
+
+    protected function loadComposer() {
+        $composerAutoloader = implode(DIRECTORY_SEPARATOR, [constant('PULEENO_TOOLKIT_ROOT_DIR'), 'vendor', 'autoload.php']);
+        if (!file_exists($composerAutoloader)) {
+            exit('Please check your environment');
+        }
+        require_once $composerAutoloader;
+    }
+
+    public function register() {
+        $this->commands = array_merge($this->commands, [
+            DownloadCommand::class,
+        ]);
+    }
+
+    public function init() {
+        foreach($this->commands as $command) {
+            $commandInstance = new $command;
+            if (!$commandInstance instanceof CommandInterface) {
+                continue;
+            }
+
+
+            $cli = $this->app->command($commandInstance->getCommandName(), $commandInstance->getDescription())
+                ->alias($commandInstance->getAlias())
+                ->action([$commandInstance, 'execute']);
+
+            // register options
+            $commandInstance->registerOptions($cli);
+
+
+            $cli->tap();
+        }
+    }
+
+    public function parse() {
+        $this->app->parse($_SERVER['argv']);
+    }
+
+    public function run() {
+        $this->app->handle($_SERVER['argv']);
+    }
+}
+
+$toolkit = new Puleeno_Toolkit();
+$toolkit->register();
+$toolkit->init();
+$toolkit->parse();
+$toolkit->run();

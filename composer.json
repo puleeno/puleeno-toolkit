@@ -1,0 +1,21 @@
+{
+    "name": "puleeno/puleeno-toolkit",
+    "description": "The toolkit for speed up my tasks",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Puleeno\\Toolkit\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Puleeno Nguyen",
+            "email": "puleeno@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "adhocore/cli": "^v0.9.0"
+    }
+}
