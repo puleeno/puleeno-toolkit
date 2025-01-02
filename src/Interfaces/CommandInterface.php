@@ -14,6 +14,10 @@ interface CommandInterface
 
     public function getVersion(): string;
 
+    public function setCommand(Command &$command);
+
+    public function getCommand(): Command;
+
     public function registerOptions(Command $command);
 
     public function execute($path = null, $paths = [], $force = false, $intentToAdd = false);

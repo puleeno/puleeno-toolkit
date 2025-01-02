@@ -13,7 +13,7 @@ abstract class CommandAbstract implements CommandInterface
 
     protected $version = '0.0.0';
 
-    protected $command;
+    protected Command $command;
 
     public function __construct()
     {
@@ -41,5 +41,17 @@ abstract class CommandAbstract implements CommandInterface
 
     public function registerOptions(Command $command)
     {
+    }
+
+    public function setCommand(Command &$command)
+    {
+        $this->command = $command;
+
+        return $this;
+    }
+
+    public function getCommand(): Command
+    {
+        return $this->command;
     }
 }

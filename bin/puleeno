@@ -54,6 +54,7 @@ class Puleeno_Toolkit {
 
             // register options
             $commandInstance->registerOptions($cli);
+            $commandInstance->setCommand($cli);
 
 
             $cli->tap();
