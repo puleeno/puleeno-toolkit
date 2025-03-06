@@ -14,7 +14,6 @@
             "email": "puleeno@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "mashape/unirest-php": "^3.0",
         "cilex/cilex": "^2.0"
