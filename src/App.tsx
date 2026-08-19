@@ -52,8 +52,13 @@ export default function App() {
     }
   }, []);
 
-  const playAlarmSound = useCallback(() => {
+  const playAlarmSound = useCallback(async () => {
     if (!soundEnabled) return;
+
+    let originalVolume = 50;
+    try {
+      originalVolume = await invoke<number>("lower_volume_for_alarm");
+    } catch {}
 
     const audioCtx = new AudioContext();
     const playBeep = (freq: number, startTime: number, duration: number) => {
@@ -74,6 +79,10 @@ export default function App() {
       playBeep(880, now + i * 0.3, 0.2);
       playBeep(1100, now + i * 0.3 + 0.15, 0.15);
     }
+
+    setTimeout(() => {
+      invoke("restore_volume", { volume: originalVolume }).catch(() => {});
+    }, 1200);
   }, [soundEnabled]);
 
   const sendNotification = useCallback(() => {
@@ -154,6 +163,11 @@ export default function App() {
     setStatus("idle");
   }, [totalSeconds]);
 
+  const snoozeTimer = useCallback(() => {
+    setRemainingSeconds(totalSeconds);
+    startTimer();
+  }, [totalSeconds, startTimer]);
+
   const progress = totalSeconds > 0 ? (remainingSeconds / totalSeconds) * 100 : 0;
   const circumference = 2 * Math.PI * 120;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -215,9 +229,14 @@ export default function App() {
           </button>
         )}
         {status === "finished" && (
-          <button className="btn btn-success" onClick={continueTimer}>
-            Continue (Reset)
-          </button>
+          <>
+            <button className="btn btn-primary" onClick={snoozeTimer}>
+              Snooze
+            </button>
+            <button className="btn btn-secondary" onClick={continueTimer}>
+              Reset
+            </button>
+          </>
         )}
         {(status === "running" || status === "paused") && (
           <button className="btn btn-secondary" onClick={resetTimer}>
