@@ -32,6 +32,7 @@ export default function App() {
   const [customSeconds, setCustomSeconds] = useState(0);
   const [sessionCount, setSessionCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [hideDockIcon, setHideDockIcon] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -168,6 +169,13 @@ export default function App() {
     startTimer();
   }, [totalSeconds, startTimer]);
 
+  const toggleDockIcon = useCallback(async (hide: boolean) => {
+    setHideDockIcon(hide);
+    try {
+      await invoke("set_dock_icon_visible", { visible: !hide });
+    } catch {}
+  }, []);
+
   const progress = totalSeconds > 0 ? (remainingSeconds / totalSeconds) * 100 : 0;
   const circumference = 2 * Math.PI * 120;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -256,6 +264,17 @@ export default function App() {
               onChange={(e) => setSoundEnabled(e.target.checked)}
             />
             Sound Alerts
+          </label>
+        </div>
+
+        <div className="setting-row">
+          <label className="toggle-label">
+            <input
+              type="checkbox"
+              checked={hideDockIcon}
+              onChange={(e) => toggleDockIcon(e.target.checked)}
+            />
+            Hide Dock Icon (tray only)
           </label>
         </div>
 
