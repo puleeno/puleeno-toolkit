@@ -1,0 +1,9 @@
+{
+  "identifier": "main",
+  "description": "main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "notification:default"
+  ]
+}
