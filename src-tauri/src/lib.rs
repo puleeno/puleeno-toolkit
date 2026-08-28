@@ -79,6 +79,24 @@ fn set_dock_icon_visible(visible: bool) {
     let _ = visible;
 }
 
+#[tauri::command]
+fn open_url(url: String) {
+    #[cfg(target_os = "macos")]
+    {
+        let _ = Command::new("open").arg(&url).output();
+    }
+    #[cfg(target_os = "windows")]
+    {
+        let _ = Command::new("cmd")
+            .args(["/C", "start", &url])
+            .output();
+    }
+    #[cfg(target_os = "linux")]
+    {
+        let _ = Command::new("xdg-open").arg(&url).output();
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -147,7 +165,8 @@ pub fn run() {
             set_system_volume,
             lower_volume_for_alarm,
             restore_volume,
-            set_dock_icon_visible
+            set_dock_icon_visible,
+            open_url
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

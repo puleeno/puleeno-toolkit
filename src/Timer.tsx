@@ -24,7 +24,7 @@ function formatTime(totalSeconds: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-export default function Timer() {
+export default function Timer({ onBack }: { onBack: () => void }) {
   const [status, setStatus] = useState<TimerStatus>("idle");
   const [totalSeconds, setTotalSeconds] = useState(5 * 60);
   const [remainingSeconds, setRemainingSeconds] = useState(5 * 60);
@@ -182,6 +182,7 @@ export default function Timer() {
   return (
     <>
       <header className="header">
+        <button className="btn-back" onClick={onBack}>←</button>
         <h1>Timer</h1>
         {sessionCount > 0 && (
           <span className="session-badge">Session #{sessionCount}</span>

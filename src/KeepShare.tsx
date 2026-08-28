@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { invoke } from "@tauri-apps/api/core";
 
 const STORAGE_KEY = "keepshare_channel_id";
 
@@ -7,7 +8,7 @@ function encodeMagnet(url: string): string {
   return encodeURIComponent(trimmed);
 }
 
-export default function KeepShare() {
+export default function KeepShare({ onBack }: { onBack: () => void }) {
   const [channelId, setChannelId] = useState("");
   const [magnetInput, setMagnetInput] = useState("");
   const [generatedUrl, setGeneratedUrl] = useState("");
@@ -74,8 +75,9 @@ export default function KeepShare() {
   };
 
   return (
-    <div className="app keepshare">
+    <div className="keepshare">
       <header className="header">
+        <button className="btn-back" onClick={onBack}>←</button>
         <h1>KeepShare Generator</h1>
       </header>
 
@@ -130,6 +132,12 @@ export default function KeepShare() {
                 onClick={copyToClipboard}
               >
                 {copied ? "Copied!" : "Copy"}
+              </button>
+              <button
+                className="btn btn-small btn-open"
+                onClick={() => invoke("open_url", { url: generatedUrl })}
+              >
+                Open
               </button>
             </div>
           </div>

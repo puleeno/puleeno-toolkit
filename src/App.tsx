@@ -2,34 +2,95 @@ import { useState } from "react";
 import Timer from "./Timer";
 import KeepShare from "./KeepShare";
 
-type Tab = "timer" | "keepshare";
+type Screen = "home" | "timer" | "keepshare" | "coming1" | "coming2";
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "timer", label: "Timer" },
-  { id: "keepshare", label: "KeepShare" },
+interface Tile {
+  id: Screen | "coming1" | "coming2";
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  size: "normal" | "wide";
+}
+
+const TILES: Tile[] = [
+  {
+    id: "timer",
+    name: "Timer",
+    description: "Pomodoro & countdown",
+    icon: "⏱",
+    color: "#0078d4",
+    size: "wide",
+  },
+  {
+    id: "keepshare",
+    name: "KeepShare",
+    description: "Magnet link generator",
+    icon: "🔗",
+    color: "#e81123",
+    size: "normal",
+  },
+  {
+    id: "coming1",
+    name: "Coming Soon",
+    description: "More tools...",
+    icon: "🚀",
+    color: "#00b294",
+    size: "normal",
+  },
+  {
+    id: "coming2",
+    name: "Coming Soon",
+    description: "Stay tuned",
+    icon: "✨",
+    color: "#8764b8",
+    size: "normal",
+  },
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>("timer");
+  const [screen, setScreen] = useState<Screen>("home");
 
-  return (
-    <div className="app">
-      <nav className="tab-bar">
-        {TABS.map((tab) => (
+  const handleTileClick = (id: Screen) => {
+    if (id === "coming1" || id === "coming2") return;
+    setScreen(id);
+  };
+
+  const renderScreen = () => {
+    switch (screen) {
+      case "timer":
+        return <Timer onBack={() => setScreen("home")} />;
+      case "keepshare":
+        return <KeepShare onBack={() => setScreen("home")} />;
+      default:
+        return renderHome();
+    }
+  };
+
+  const renderHome = () => (
+    <>
+      <header className="header">
+        <h1>Puleeno Toolkit</h1>
+      </header>
+
+      <div className="tiles-grid">
+        {TILES.map((tile) => (
           <button
-            key={tab.id}
-            className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
+            key={tile.id}
+            className={`tile tile-${tile.size}`}
+            onClick={() => handleTileClick(tile.id as Screen)}
+            style={{ backgroundColor: tile.color } as React.CSSProperties}
           >
-            {tab.label}
+            <span className="tile-icon">{tile.icon}</span>
+            <div className="tile-text">
+              <span className="tile-name">{tile.name}</span>
+              <span className="tile-desc">{tile.description}</span>
+            </div>
           </button>
         ))}
-      </nav>
-
-      <div className="tab-content">
-        {activeTab === "timer" && <Timer />}
-        {activeTab === "keepshare" && <KeepShare />}
       </div>
-    </div>
+    </>
   );
+
+  return <div className="app">{renderScreen()}</div>;
 }
