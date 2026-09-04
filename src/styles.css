@@ -463,3 +463,25 @@ html, body, #root {
   background: var(--warning);
   color: var(--bg);
 }
+
+.result-ok {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--success);
+  color: var(--success);
+  font-size: 0.85rem;
+}
+
+.result-err {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  font-size: 0.85rem;
+}
