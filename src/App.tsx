@@ -1,8 +1,9 @@
 import { useState } from "react";
 import Timer from "./Timer";
 import KeepShare from "./KeepShare";
+import TuycoDownload from "./TuycoDownload";
 
-type Screen = "home" | "timer" | "keepshare" | "coming1" | "coming2";
+type Screen = "home" | "timer" | "keepshare" | "tuyco" | "coming2";
 
 interface Tile {
   id: Screen | "coming1" | "coming2";
@@ -31,17 +32,17 @@ const TILES: Tile[] = [
     size: "normal",
   },
   {
-    id: "coming1",
-    name: "Coming Soon",
-    description: "More tools...",
-    icon: "🚀",
-    color: "#00b294",
+    id: "tuyco",
+    name: "Tuyco Download",
+    description: "Send links to Tuyco downloader",
+    icon: "🖼",
+    color: "#d29922",
     size: "normal",
   },
   {
     id: "coming2",
     name: "Coming Soon",
-    description: "Stay tuned",
+    description: "More tools...",
     icon: "✨",
     color: "#8764b8",
     size: "normal",
@@ -52,7 +53,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
 
   const handleTileClick = (id: Screen) => {
-    if (id === "coming1" || id === "coming2") return;
+    if (id === "coming2") return;
     setScreen(id);
   };
 
@@ -62,6 +63,8 @@ export default function App() {
         return <Timer onBack={() => setScreen("home")} />;
       case "keepshare":
         return <KeepShare onBack={() => setScreen("home")} />;
+      case "tuyco":
+        return <TuycoDownload onBack={() => setScreen("home")} />;
       default:
         return renderHome();
     }
