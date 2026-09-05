@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 const STORAGE_KEY = "keepshare_channel_id";
+const AUTO_OPEN_KEY = "keepshare_auto_open";
 
 function encodeMagnet(url: string): string {
   const trimmed = url.trim();
@@ -13,15 +14,25 @@ export default function KeepShare({ onBack }: { onBack: () => void }) {
   const [magnetInput, setMagnetInput] = useState("");
   const [generatedUrl, setGeneratedUrl] = useState("");
   const [copied, setCopied] = useState(false);
+  const [autoOpen, setAutoOpen] = useState(true);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     setChannelId(saved || "16b6v173");
+    const savedAutoOpen = localStorage.getItem(AUTO_OPEN_KEY);
+    if (savedAutoOpen !== null) setAutoOpen(savedAutoOpen === "true");
   }, []);
 
   const saveChannelId = (id: string) => {
     setChannelId(id);
     localStorage.setItem(STORAGE_KEY, id);
+  };
+
+  const toggleAutoOpen = () => {
+    setAutoOpen((prev) => {
+      localStorage.setItem(AUTO_OPEN_KEY, String(!prev));
+      return !prev;
+    });
   };
 
   const generate = () => {
@@ -33,6 +44,7 @@ export default function KeepShare({ onBack }: { onBack: () => void }) {
     const url = `https://keepshare.org/${id}/${encoded}`;
     setGeneratedUrl(url);
     setCopied(false);
+    if (autoOpen) invoke("open_url", { url });
   };
 
   const copyToClipboard = async () => {
@@ -107,6 +119,15 @@ export default function KeepShare({ onBack }: { onBack: () => void }) {
             className="input"
           />
         </div>
+
+        <label className="toggle-label">
+          <input
+            type="checkbox"
+            checked={autoOpen}
+            onChange={toggleAutoOpen}
+          />
+          Open link in browser after generate
+        </label>
 
         <button
           className="btn btn-primary btn-full"
