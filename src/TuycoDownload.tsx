@@ -34,7 +34,7 @@ export default function TuycoDownload({ onBack }: { onBack: () => void }) {
     setSending(true);
     setStatus({ loaded: true, ok: false, message: "Sending to Tuyco…" });
     try {
-      const res = await fetch(`${serverUrl.replace(/\/+$/, "")}/downloads`, {
+      const res = await fetch(`${serverUrl.replace(/\/+$/, "")}/api/downloads/push`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
