@@ -2,8 +2,9 @@ import { useState } from "react";
 import Timer from "./Timer";
 import KeepShare from "./KeepShare";
 import TuycoDownload from "./TuycoDownload";
+import RemEmCalculator from "./RemEmCalculator";
 
-type Screen = "home" | "timer" | "keepshare" | "tuyco" | "coming2";
+type Screen = "home" | "timer" | "keepshare" | "tuyco" | "remem" | "coming2";
 
 interface Tile {
   id: Screen | "coming1" | "coming2";
@@ -40,6 +41,14 @@ const TILES: Tile[] = [
     size: "normal",
   },
   {
+    id: "remem",
+    name: "REM/EM Calculator",
+    description: "CSS unit ratios",
+    icon: "📐",
+    color: "#2ac1de",
+    size: "normal",
+  },
+  {
     id: "coming2",
     name: "Coming Soon",
     description: "More tools...",
@@ -65,6 +74,8 @@ export default function App() {
         return <KeepShare onBack={() => setScreen("home")} />;
       case "tuyco":
         return <TuycoDownload onBack={() => setScreen("home")} />;
+      case "remem":
+        return <RemEmCalculator onBack={() => setScreen("home")} />;
       default:
         return renderHome();
     }
