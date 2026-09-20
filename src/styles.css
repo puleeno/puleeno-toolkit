@@ -529,16 +529,12 @@ html, body, #root {
   align-items: flex-end;
 }
 
-.remem-field-name {
-  flex: 3;
-}
-
 .remem-field-px {
-  flex: 1.5;
+  flex: 1;
 }
 
 .remem-field-base {
-  flex: 1.5;
+  flex: 1;
 }
 
 .remem-btn-add {
@@ -578,22 +574,25 @@ html, body, #root {
 
 .remem-group-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
   padding: 10px 16px;
   background: var(--surface-hover);
 }
 
 .remem-group-base {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: var(--primary);
   font-family: var(--font-mono);
 }
 
-.remem-group-count {
+.remem-group-label {
   font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .remem-group-entries {
@@ -613,55 +612,48 @@ html, body, #root {
   border-top: none;
 }
 
-.remem-entry-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-}
-
-.remem-entry-name {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
 .remem-entry-values {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--text-dim);
+  flex: 1;
 }
 
-.remem-entry-px-input,
-.remem-entry-base-input {
-  width: 52px;
-  padding: 3px 6px;
+.remem-entry-px-input {
+  width: 56px;
+  padding: 4px 6px;
   border: 1px solid var(--ring-bg);
   border-radius: 4px;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   text-align: center;
   outline: none;
 }
 
-.remem-entry-px-input:focus,
-.remem-entry-base-input:focus {
+.remem-entry-px-input:focus {
   border-color: var(--primary);
 }
 
 .remem-entry-unit {
   color: var(--text-dim);
+  font-size: 0.8rem;
 }
 
 .remem-entry-sep {
   color: var(--text-dim);
   margin: 0 2px;
+}
+
+.remem-entry-base-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
 }
 
 .remem-entry-result {
@@ -678,7 +670,7 @@ html, body, #root {
 
 .remem-entry-ratio {
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--success);
   min-width: 70px;

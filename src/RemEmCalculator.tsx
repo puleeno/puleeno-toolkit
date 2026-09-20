@@ -5,7 +5,6 @@ const STORAGE_KEY_ENTRIES = "remem_entries";
 
 interface Entry {
   id: number;
-  name: string;
   px: number | "";
   base: number;
 }
@@ -23,7 +22,6 @@ function loadEntries(): Entry[] {
     if (!Array.isArray(parsed)) return [];
     return parsed.map((e: any) => ({
       id: Number(e.id) || Date.now(),
-      name: String(e.name || ""),
       px: e.px === "" ? "" : Number(e.px) || "",
       base: Number(e.base) || 16,
     }));
@@ -38,7 +36,6 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
     return saved ? Number(saved) || 16 : 16;
   });
   const [entries, setEntries] = useState<Entry[]>(loadEntries);
-  const [formName, setFormName] = useState("");
   const [formPx, setFormPx] = useState<number | "">("");
   const [formBase, setFormBase] = useState<number | "">("");
   const [copied, setCopied] = useState(false);
@@ -55,19 +52,13 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
     formBase === "" ? rootFontSize : Number(formBase) || rootFontSize;
 
   const addEntry = () => {
-    const name = formName.trim();
     const px = formPx === "" ? "" : Number(formPx);
-    if (!name || px === "" || px <= 0) return;
+    if (px === "" || px <= 0) return;
 
-    const newEntry: Entry = {
-      id: Date.now(),
-      name,
-      px,
-      base: effectiveBase,
-    };
-
-    setEntries((prev) => [...prev, newEntry]);
-    setFormName("");
+    setEntries((prev) => [
+      ...prev,
+      { id: Date.now(), px, base: effectiveBase },
+    ]);
     setFormPx("");
   };
 
@@ -114,13 +105,6 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
     return `${str}rem`;
   };
 
-  const toCssVarName = (name: string): string => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-  };
-
   const copyCss = async () => {
     if (entries.length === 0) return;
 
@@ -130,10 +114,8 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
       for (const entry of group.entries) {
         if (entry.px === "") continue;
         const ratio = entry.px / entry.base;
-        const varName = `--${toCssVarName(entry.name)}`;
         const value = formatRatio(ratio);
-        const comment = `/* ${entry}px / ${entry.base}px base */`;
-        lines.push(`  ${varName}: ${value}; ${comment}`);
+        lines.push(`  /* ${entry.px}px */ ${value};`);
       }
     }
     lines.push("}");
@@ -187,17 +169,6 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
 
         <div className="remem-add-form">
           <div className="remem-form-row">
-            <div className="form-group remem-field-name">
-              <label>Name</label>
-              <input
-                type="text"
-                placeholder="e.g. Line Height"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="input"
-              />
-            </div>
             <div className="form-group remem-field-px">
               <label>Px</label>
               <input
@@ -232,9 +203,7 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
             <button
               className="btn btn-primary remem-btn-add"
               onClick={addEntry}
-              disabled={
-                !formName.trim() || formPx === "" || Number(formPx) <= 0
-              }
+              disabled={formPx === "" || Number(formPx) <= 0}
             >
               +
             </button>
@@ -263,47 +232,30 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
         {groups.map((group) => (
           <div key={group.base} className="remem-group">
             <div className="remem-group-header">
-              <span className="remem-group-base">{group.base}px Base</span>
-              <span className="remem-group-count">
-                {group.entries.length} value
-                {group.entries.length !== 1 ? "s" : ""}
-              </span>
+              <span className="remem-group-base">{group.base}px</span>
+              <span className="remem-group-label">Base</span>
             </div>
 
             <div className="remem-group-entries">
               {group.entries.map((entry) => (
                 <div key={entry.id} className="remem-entry">
-                  <div className="remem-entry-info">
-                    <span className="remem-entry-name">{entry.name}</span>
-                    <div className="remem-entry-values">
-                      <input
-                        type="number"
-                        className="remem-entry-px-input"
-                        value={entry.px}
-                        min={0}
-                        step="any"
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          updateEntryPx(
-                            entry.id,
-                            v === "" ? "" : Number(v)
-                          );
-                        }}
-                      />
-                      <span className="remem-entry-unit">px</span>
-                      <span className="remem-entry-sep">/</span>
-                      <input
-                        type="number"
-                        className="remem-entry-base-input"
-                        value={entry.base}
-                        min={1}
-                        onChange={(e) => {
-                          const v = Number(e.target.value);
-                          if (v > 0) updateEntryBase(entry.id, v);
-                        }}
-                      />
-                      <span className="remem-entry-unit">px</span>
-                    </div>
+                  <div className="remem-entry-values">
+                    <input
+                      type="number"
+                      className="remem-entry-px-input"
+                      value={entry.px}
+                      min={0}
+                      step="any"
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        updateEntryPx(entry.id, v === "" ? "" : Number(v));
+                      }}
+                    />
+                    <span className="remem-entry-unit">px</span>
+                    <span className="remem-entry-sep">/</span>
+                    <span className="remem-entry-base-value">
+                      {entry.base}px
+                    </span>
                   </div>
 
                   <div className="remem-entry-result">
