@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 
-const STORAGE_KEY_ROOT = "remem_root_font_size";
 const STORAGE_KEY_ENTRIES = "remem_entries";
 
 interface Entry {
@@ -31,25 +30,17 @@ function loadEntries(): Entry[] {
 }
 
 export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
-  const [rootFontSize, setRootFontSize] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_ROOT);
-    return saved ? Number(saved) || 16 : 16;
-  });
   const [entries, setEntries] = useState<Entry[]>(loadEntries);
   const [formPx, setFormPx] = useState<number | "">("");
   const [formBase, setFormBase] = useState<number | "">("");
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_ROOT, String(rootFontSize));
-  }, [rootFontSize]);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(entries));
   }, [entries]);
 
-  const effectiveBase =
-    formBase === "" ? rootFontSize : Number(formBase) || rootFontSize;
+  const effectiveBase = formBase === "" ? 16 : Number(formBase) || 16;
 
   const addEntry = () => {
     const px = formPx === "" ? "" : Number(formPx);
@@ -105,6 +96,23 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
     return `${str}rem`;
   };
 
+  const copyRatio = async (entry: Entry & { ratio: number }) => {
+    if (entry.px === "") return;
+    const value = formatRatio(entry.ratio);
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = value;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    setCopiedId(entry.id);
+    setTimeout(() => setCopiedId(null), 1500);
+  };
+
   const copyCss = async () => {
     if (entries.length === 0) return;
 
@@ -150,23 +158,6 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
       </header>
 
       <div className="remem-form">
-        <div className="form-group">
-          <label>Root Font Size</label>
-          <div className="remem-root-input">
-            <input
-              type="number"
-              min={1}
-              value={rootFontSize}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                if (v > 0) setRootFontSize(v);
-              }}
-              className="input remem-input-small"
-            />
-            <span className="remem-unit">px</span>
-          </div>
-        </div>
-
         <div className="remem-add-form">
           <div className="remem-form-row">
             <div className="form-group remem-field-px">
@@ -190,7 +181,7 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
               <input
                 type="number"
                 min={1}
-                placeholder={String(rootFontSize)}
+                placeholder="16"
                 value={formBase}
                 onChange={(e) => {
                   const v = e.target.value;
@@ -260,9 +251,13 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
 
                   <div className="remem-entry-result">
                     <span className="remem-entry-arrow">→</span>
-                    <span className="remem-entry-ratio">
+                    <button
+                      className={`remem-entry-ratio ${copiedId === entry.id ? "remem-entry-ratio--copied" : ""}`}
+                      onClick={() => copyRatio(entry)}
+                      title="Click to copy"
+                    >
                       {entry.px !== "" ? formatRatio(entry.ratio) : "—"}
-                    </span>
+                    </button>
                     <button
                       className="remem-entry-delete"
                       onClick={() => removeEntry(entry.id)}
