@@ -289,42 +289,32 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
             <div className="remem-group-entries">
               {group.entries.map((entry) => (
                 <div key={entry.id} className="remem-entry">
-                  <div className="remem-entry-values">
-                    <input
-                      type="number"
-                      className="remem-entry-px-input"
-                      value={entry.px}
-                      min={0}
-                      step="any"
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        updateEntryPx(entry.id, v === "" ? "" : Number(v));
-                      }}
-                    />
-                    <span className="remem-entry-unit">px</span>
-                    <span className="remem-entry-sep">/</span>
-                    <span className="remem-entry-base-value">
-                      {entry.base}px
-                    </span>
-                  </div>
-
-                  <div className="remem-entry-result">
-                    <span className="remem-entry-arrow">→</span>
-                    <button
-                      className={`remem-entry-ratio ${copiedId === entry.id ? "remem-entry-ratio--copied" : ""}`}
-                      onClick={() => copyRatio(entry)}
-                      title="Click to copy"
-                    >
-                      {entry.px !== "" ? `${formatRatio(entry.ratio)}rem` : "—"}
-                    </button>
-                    <button
-                      className="remem-entry-delete"
-                      onClick={() => removeEntry(entry.id)}
-                      title="Remove"
-                    >
-                      ×
-                    </button>
-                  </div>
+                  <input
+                    type="number"
+                    className="remem-entry-px-input"
+                    value={entry.px}
+                    min={0}
+                    step="any"
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      updateEntryPx(entry.id, v === "" ? "" : Number(v));
+                    }}
+                  />
+                  <span className="remem-entry-unit">px</span>
+                  <button
+                    className={`remem-entry-ratio ${copiedId === entry.id ? "remem-entry-ratio--copied" : ""}`}
+                    onClick={() => copyRatio(entry)}
+                    title="Click to copy"
+                  >
+                    {entry.px !== "" ? `${formatRatio(entry.ratio)}rem` : "—"}
+                  </button>
+                  <button
+                    className="remem-entry-delete"
+                    onClick={() => removeEntry(entry.id)}
+                    title="Remove"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
             </div>

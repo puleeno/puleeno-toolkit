@@ -597,37 +597,29 @@ html, body, #root {
 }
 
 .remem-group-entries {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 4px;
+  padding: 6px;
 }
 
 .remem-entry {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 10px;
-  border-top: 1px solid var(--ring-bg);
-}
-
-.remem-entry:first-child {
-  border-top: none;
-}
-
-.remem-entry-values {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-dim);
+  gap: 2px;
+  padding: 6px 4px;
+  background: var(--bg);
+  border-radius: 6px;
+  position: relative;
 }
 
 .remem-entry-px-input {
-  width: 44px;
+  width: 56px;
   padding: 2px 4px;
   border: 1px solid var(--ring-bg);
   border-radius: 4px;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text);
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -641,43 +633,19 @@ html, body, #root {
 
 .remem-entry-unit {
   color: var(--text-dim);
-  font-size: 0.7rem;
-}
-
-.remem-entry-sep {
-  color: var(--text-dim);
-}
-
-.remem-entry-base-value {
+  font-size: 0.65rem;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-.remem-entry-result {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.remem-entry-arrow {
-  color: var(--text-dim);
-  font-size: 0.75rem;
 }
 
 .remem-entry-ratio {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--success);
-  min-width: 50px;
-  text-align: right;
   background: none;
   border: 1px solid transparent;
   border-radius: 4px;
-  padding: 1px 4px;
+  padding: 2px 4px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -694,19 +662,27 @@ html, body, #root {
 }
 
 .remem-entry-delete {
-  width: 18px;
-  height: 18px;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   background: transparent;
   color: var(--text-dim);
-  font-size: 0.8rem;
+  font-size: 0.65rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease;
   padding: 0;
+  opacity: 0;
+}
+
+.remem-entry:hover .remem-entry-delete {
+  opacity: 1;
 }
 
 .remem-entry-delete:hover {
