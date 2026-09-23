@@ -47,10 +47,13 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
     const px = formPx === "" ? "" : Number(formPx);
     if (px === "" || px <= 0) return;
 
-    setEntries((prev) => [
-      ...prev,
-      { id: Date.now(), px, base: effectiveBase },
-    ]);
+    const base = effectiveBase;
+    const exists = entries.some(
+      (e) => e.px !== "" && Number(e.px) === px && e.base === base
+    );
+    if (exists) return;
+
+    setEntries((prev) => [...prev, { id: Date.now(), px, base }]);
     setFormPx("");
   };
 
@@ -88,7 +91,12 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
       }
     }
 
-    return Array.from(map.values());
+    return Array.from(map.values()).map((g) => ({
+      ...g,
+      entries: [...g.entries].sort(
+        (a, b) => Number(a.px) - Number(b.px)
+      ),
+    }));
   }, [entries]);
 
   const formatRatio = (ratio: number): string => {

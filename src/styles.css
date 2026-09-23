@@ -499,13 +499,13 @@ html, body, #root {
 .remem-form {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 12px;
+  padding: 10px 12px;
 }
 
 .remem-add-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .remem-form-row {
@@ -514,19 +514,17 @@ html, body, #root {
   align-items: flex-end;
 }
 
-.remem-field-px {
-  flex: 1;
-}
-
+.remem-field-px,
 .remem-field-base {
-  flex: 1;
+  width: 80px;
+  flex-shrink: 0;
 }
 
 .remem-btn-add {
-  width: 36px;
-  height: 34px;
+  width: 32px;
+  height: 30px;
   flex-shrink: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
   padding: 0;
   display: flex;
   align-items: center;
@@ -547,7 +545,7 @@ html, body, #root {
 .remem-results {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -579,19 +577,19 @@ html, body, #root {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: var(--surface-hover);
 }
 
 .remem-group-base {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--primary);
   font-family: var(--font-mono);
 }
 
 .remem-group-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-dim);
   text-transform: uppercase;
@@ -607,7 +605,7 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-top: 1px solid var(--ring-bg);
 }
 
@@ -620,21 +618,19 @@ html, body, #root {
   align-items: center;
   gap: 4px;
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-dim);
-  flex: 1;
-  min-width: 0;
 }
 
 .remem-entry-px-input {
-  width: 50px;
-  padding: 3px 4px;
+  width: 44px;
+  padding: 2px 4px;
   border: 1px solid var(--ring-bg);
   border-radius: 4px;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-align: center;
   outline: none;
 }
@@ -645,17 +641,16 @@ html, body, #root {
 
 .remem-entry-unit {
   color: var(--text-dim);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 .remem-entry-sep {
   color: var(--text-dim);
-  margin: 0 1px;
 }
 
 .remem-entry-base-value {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--primary);
 }
@@ -669,20 +664,20 @@ html, body, #root {
 
 .remem-entry-arrow {
   color: var(--text-dim);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 .remem-entry-ratio {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--success);
-  min-width: 60px;
+  min-width: 50px;
   text-align: right;
   background: none;
   border: 1px solid transparent;
   border-radius: 4px;
-  padding: 2px 4px;
+  padding: 1px 4px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -699,13 +694,13 @@ html, body, #root {
 }
 
 .remem-entry-delete {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: none;
   border-radius: 4px;
   background: transparent;
   color: var(--text-dim);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   cursor: pointer;
   display: flex;
   align-items: center;
