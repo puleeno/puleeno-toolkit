@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 const STORAGE_KEY_ENTRIES = "remem_entries";
 
@@ -35,6 +35,7 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
   const [formBase, setFormBase] = useState<number | "">("");
   const [copied, setCopied] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(entries));
@@ -91,9 +92,9 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
   }, [entries]);
 
   const formatRatio = (ratio: number): string => {
-    if (ratio === Math.floor(ratio)) return `${ratio}rem`;
-    const str = ratio.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
-    return `${str}rem`;
+    const rounded = Math.round(ratio * 100) / 100;
+    if (rounded === Math.floor(rounded)) return `${rounded}`;
+    return String(rounded);
   };
 
   const copyRatio = async (entry: Entry & { ratio: number }) => {
@@ -142,6 +143,40 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const exportJson = () => {
+    const data = JSON.stringify(entries, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "remem-values.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result as string);
+        if (!Array.isArray(parsed)) return;
+        const valid = parsed
+          .filter((item: any) => item && typeof item.px === "number" && typeof item.base === "number")
+          .map((item: any) => ({
+            id: Date.now() + Math.random(),
+            px: item.px,
+            base: item.base,
+          }));
+        if (valid.length > 0) setEntries((prev) => [...prev, ...valid]);
+      } catch {}
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -204,6 +239,22 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
 
       {entries.length > 0 && (
         <div className="remem-actions">
+          <button className="btn btn-small btn-secondary" onClick={exportJson}>
+            Export
+          </button>
+          <button
+            className="btn btn-small btn-secondary"
+            onClick={() => fileRef.current?.click()}
+          >
+            Import
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".json"
+            onChange={importJson}
+            className="remem-file-input"
+          />
           <button
             className={`btn btn-small ${copied ? "btn-success" : "btn-secondary"}`}
             onClick={copyCss}
@@ -256,7 +307,7 @@ export default function RemEmCalculator({ onBack }: { onBack: () => void }) {
                       onClick={() => copyRatio(entry)}
                       title="Click to copy"
                     >
-                      {entry.px !== "" ? formatRatio(entry.ratio) : "—"}
+                      {entry.px !== "" ? `${formatRatio(entry.ratio)}rem` : "—"}
                     </button>
                     <button
                       className="remem-entry-delete"
