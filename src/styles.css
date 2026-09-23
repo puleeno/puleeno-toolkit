@@ -494,12 +494,18 @@ html, body, #root {
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+}
+
+.remem-container > .header {
+  flex-shrink: 0;
 }
 
 .remem-form {
   background: var(--surface);
   border-radius: var(--radius);
   padding: 10px 12px;
+  flex-shrink: 0;
 }
 
 .remem-add-form {
@@ -536,6 +542,7 @@ html, body, #root {
   justify-content: flex-end;
   gap: 6px;
   padding: 4px 0;
+  flex-shrink: 0;
 }
 
 .remem-file-input {
