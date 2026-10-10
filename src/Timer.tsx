@@ -33,7 +33,11 @@ export default function Timer({ onBack }: { onBack: () => void }) {
   const [sessionCount, setSessionCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hideDockIcon, setHideDockIcon] = useState(false);
+  const [autoSnooze, setAutoSnooze] = useState(true);
+  const [autoSnoozeMinutes, setAutoSnoozeMinutes] = useState(2);
+  const [autoSnoozeCountdown, setAutoSnoozeCountdown] = useState<number | null>(null);
   const intervalRef = useRef<number | null>(null);
+  const autoSnoozeRef = useRef<number | null>(null);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -42,9 +46,20 @@ export default function Timer({ onBack }: { onBack: () => void }) {
     }
   }, []);
 
+  const clearAutoSnooze = useCallback(() => {
+    if (autoSnoozeRef.current !== null) {
+      clearInterval(autoSnoozeRef.current);
+      autoSnoozeRef.current = null;
+    }
+    setAutoSnoozeCountdown(null);
+  }, []);
+
   useEffect(() => {
-    return () => clearTimer();
-  }, [clearTimer]);
+    return () => {
+      clearTimer();
+      clearAutoSnooze();
+    };
+  }, [clearTimer, clearAutoSnooze]);
 
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "default") {
@@ -98,13 +113,32 @@ export default function Timer({ onBack }: { onBack: () => void }) {
     }).catch(() => {});
   }, []);
 
+  const startTimerRef = useRef<(() => void) | null>(null);
+
   const handleTimerEnd = useCallback(() => {
     clearTimer();
     setStatus("finished");
     setSessionCount((c) => c + 1);
     playAlarmSound();
     sendNotification();
-  }, [clearTimer, playAlarmSound, sendNotification]);
+
+    if (autoSnooze) {
+      setAutoSnoozeCountdown(autoSnoozeMinutes * 60);
+      autoSnoozeRef.current = window.setInterval(() => {
+        setAutoSnoozeCountdown((prev) => {
+          if (prev === null) return null;
+          if (prev <= 1) {
+            clearAutoSnooze();
+            setRemainingSeconds(totalSeconds);
+            setStatus("idle");
+            startTimerRef.current?.();
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+  }, [clearTimer, playAlarmSound, sendNotification, autoSnooze, autoSnoozeMinutes, totalSeconds, clearAutoSnooze]);
 
   const startTimer = useCallback(() => {
     clearTimer();
@@ -120,6 +154,8 @@ export default function Timer({ onBack }: { onBack: () => void }) {
     }, 1000);
   }, [clearTimer, handleTimerEnd]);
 
+  startTimerRef.current = startTimer;
+
   const pauseTimer = useCallback(() => {
     clearTimer();
     setStatus("paused");
@@ -131,9 +167,10 @@ export default function Timer({ onBack }: { onBack: () => void }) {
 
   const resetTimer = useCallback(() => {
     clearTimer();
+    clearAutoSnooze();
     setStatus("idle");
     setRemainingSeconds(totalSeconds);
-  }, [clearTimer, totalSeconds]);
+  }, [clearTimer, clearAutoSnooze, totalSeconds]);
 
   const applyCustomTime = useCallback(() => {
     const total = customMinutes * 60 + customSeconds;
@@ -159,14 +196,16 @@ export default function Timer({ onBack }: { onBack: () => void }) {
   );
 
   const continueTimer = useCallback(() => {
+    clearAutoSnooze();
     setRemainingSeconds(totalSeconds);
     setStatus("idle");
-  }, [totalSeconds]);
+  }, [clearAutoSnooze, totalSeconds]);
 
   const snoozeTimer = useCallback(() => {
+    clearAutoSnooze();
     setRemainingSeconds(totalSeconds);
     startTimer();
-  }, [totalSeconds, startTimer]);
+  }, [clearAutoSnooze, totalSeconds, startTimer]);
 
   const toggleDockIcon = useCallback(async (hide: boolean) => {
     setHideDockIcon(hide);
@@ -253,6 +292,12 @@ export default function Timer({ onBack }: { onBack: () => void }) {
         )}
       </div>
 
+      {status === "finished" && autoSnoozeCountdown !== null && (
+        <div className="auto-snooze-banner">
+          Auto-snooze in {formatTime(autoSnoozeCountdown)}
+        </div>
+      )}
+
       <div className="settings">
         <h2>Settings</h2>
 
@@ -277,6 +322,33 @@ export default function Timer({ onBack }: { onBack: () => void }) {
             Hide Dock Icon (tray only)
           </label>
         </div>
+
+        <div className="setting-row">
+          <label className="toggle-label">
+            <input
+              type="checkbox"
+              checked={autoSnooze}
+              onChange={(e) => setAutoSnooze(e.target.checked)}
+            />
+            Auto Snooze
+          </label>
+        </div>
+
+        {autoSnooze && (
+          <div className="custom-time">
+            <label>Snooze after:</label>
+            <input
+              type="number"
+              min="1"
+              max="60"
+              value={autoSnoozeMinutes}
+              onChange={(e) =>
+                setAutoSnoozeMinutes(Math.max(1, Number(e.target.value)))
+              }
+            />
+            <span>min</span>
+          </div>
+        )}
 
         <div className="presets">
           {PRESETS.map((preset) => (
